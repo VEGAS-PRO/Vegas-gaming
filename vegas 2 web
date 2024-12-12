@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vegas Gaming</title>
+    <style>
+        /* CSS Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .login-container, .news-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .news-item {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .news-item h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .news-item p {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .news-item a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        .news-item a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div class="login-container" id="login-container">
+        <h1>Welcome to Vegas Gaming</h1>
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <!-- News Section -->
+    <div class="news-container" id="news-container" style="display: none;">
+        <h1>Vegas Gaming News</h1>
+        <div id="news-list">
+            <!-- News will load dynamically here -->
+        </div>
+    </div>
+
+    <script>
+        // JavaScript Logic
+        document.addEventListener("DOMContentLoaded", () => {
+            const loginForm = document.getElementById("loginForm");
+            const loginContainer = document.getElementById("login-container");
+            const newsContainer = document.getElementById("news-container");
+            const newsList = document.getElementById("news-list");
+
+            // Handle Login
+            loginForm.addEventListener("submit", (event) => {
+                event.preventDefault(); // Prevent form submission
+                loginContainer.style.display = "none";
+                newsContainer.style.display = "block";
+                fetchGamingNews(); // Load news after login
+            });
+
+            // Fetch Gaming News
+            async function fetchGamingNews() {
+                const apiKey = "af4f0e3edf8b488d9a82bb845f4514ca";
+                const apiUrl = `https://newsapi.org/v2/everything?q=gaming OR "video games" OR "PC games" OR "console games"&language=en&sortBy=publishedAt&apiKey=${apiKey}`;
+
+                try {
+                    const response = await fetch(apiUrl);
+                    const data = await response.json();
+
+                    if (data.articles && data.articles.length > 0) {
+                        newsList.innerHTML = data.articles
+                            .map(
+                                (article) => `
+                                <div class="news-item">
+                                    <h2>${article.title}</h2>
+                                    <p>${article.description || "No description available."}</p>
+                                    <a href="${article.url}" target="_blank">Read More</a>
+                                </div>
+                            `
+                            )
+                            .join("");
+                    } else {
+                        newsList.innerHTML = "<p>No gaming news available at the moment.</p>";
+                    }
+                } catch (error) {
+                    console.error("Error fetching gaming news:", error);
+                    newsList.innerHTML = "<p>Failed to load gaming news.</p>";
+                }
+            }
+        });
+    </script>
+</body>
+</html>
